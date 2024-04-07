@@ -6,6 +6,9 @@ $(document).ready(function() {
     const $startGameBtn = $('#start-game-btn');
     const $roleDisplay = $('#player-role');
     const $gameStatusDisplay = $('#game-status');
+    const $registrationContainer = $('#registration-container');
+    const $setupContainer = $('#setup-container');
+    const $gameContainer = $('#game-container');
 
     let players = [];
     let roles = [];
