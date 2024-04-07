@@ -9,17 +9,6 @@ $(document).ready(function() {
 
     let players = [];
 
-    // 役職と説明の定義
-    const availableRoles = {
-        '村人': '村人は特殊な能力を持たない普通の村人です。',
-        '人狼': '人狼は夜に他の人狼と協力して村人を襲撃します。',
-        '占い師': '占い師は毎晩1人を占ってその人が人狼かどうかを知ることができます。',
-        '霊媒師': '霊媒師は死んだ人の霊を呼び出して役職を知ることができます。',
-        '狩人': '狩人は夜に他のプレイヤーを守ることができ、人狼の襲撃から守ることができます。',
-        '共有者': '共有者は他の共有者と会話することができ、お互いの情報を共有できます。',
-        '妖狐': '妖狐は人狼を倒すことができますが、占い師には人狼と判定されてしまいます。'
-    };
-
     // 設定画面へ進む
     $('#goto-setup-btn').on('click', function() {
         setupRoles();
@@ -28,7 +17,17 @@ $(document).ready(function() {
 
     // 役職選択と人数選択を設定する
     function setupRoles() {
-        $roleList.empty();
+        $roleList.empty(); // 要素をクリアしてから再設定
+
+        const availableRoles = {
+            '村人': '村人は特殊な能力を持たない普通の村人です。',
+            '人狼': '人狼は夜に他の人狼と協力して村人を襲撃します。',
+            '占い師': '占い師は毎晩1人を占ってその人が人狼かどうかを知ることができます。',
+            '霊媒師': '霊媒師は死んだ人の霊を呼び出して役職を知ることができます。',
+            '狩人': '狩人は夜に他のプレイヤーを守ることができ、人狼の襲撃から守ることができます。',
+            '共有者': '共有者は他の共有者と会話することができ、お互いの情報を共有できます。',
+            '妖狐': '妖狐は人狼を倒すことができますが、占い師には人狼と判定されてしまいます。'
+        };
 
         // 役職ごとに選択肢を追加
         Object.entries(availableRoles).forEach(([role, description]) => {
@@ -43,13 +42,31 @@ $(document).ready(function() {
             $roleItem.append($countInput);
             $roleList.append($roleItem);
         });
+
+        // 手渡しモードの場合、本人確認を行う
+        if ($('#game-mode').val() === 'offline') {
+            confirmPlayers();
+        }
+    }
+
+    // 本人確認を行う
+    function confirmPlayers() {
+        const confirmedPlayers = [];
+        players.forEach(function(player) {
+            const confirmation = confirm(`${player} さん、あなたの役職を見せますか？`);
+            if (confirmation) {
+                confirmedPlayers.push(player);
+            }
+        });
+        players = confirmedPlayers; // 本人確認後のプレイヤーリストを更新
+        displayPlayers();
     }
 
     // ゲームを開始する
     $('#start-game-btn').on('click', function() {
         const selectedRoles = [];
 
-        // 選択された役職を取得
+        // 選択された役職と人数を取得
         $('#role-list li').each(function() {
             const role = $(this).find('span:first').text();
             const count = parseInt($(this).find('input').val());
@@ -98,12 +115,21 @@ $(document).ready(function() {
         }
     });
 
+    // プレイヤーを削除する
+    $(document).on('click', '.remove-player-btn', function() {
+        const playerToRemove = $(this).closest('li').text();
+        players = players.filter(player => player !== playerToRemove);
+        displayPlayers();
+    });
+
     // プレイヤー名を表示する
     function displayPlayers() {
         const $playerList = $('#player-list');
         $playerList.empty();
         players.forEach(function(player) {
             const $playerItem = $('<li></li>').text(player);
+            const $removeBtn = $('<button class="remove-player-btn">削除</button>');
+            $playerItem.append($removeBtn);
             $playerList.append($playerItem);
         });
 
