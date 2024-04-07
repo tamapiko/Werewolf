@@ -2,29 +2,48 @@ document.addEventListener('DOMContentLoaded', function() {
     const registrationContainer = document.getElementById('registration-container');
     const setupContainer = document.getElementById('setup-container');
     const gameContainer = document.getElementById('game-container');
-    const playerNameInput = document.getElementById('player-name');
-    const registerPlayerButton = document.getElementById('register-player-btn');
+    const addPlayerButton = document.getElementById('add-player-btn');
+    const startSetupButton = document.getElementById('start-setup-btn');
+    const startGameButton = document.getElementById('start-game-btn');
     const rolesSelect = document.getElementById('roles-select');
     const gameModeSelect = document.getElementById('game-mode');
-    const startGameButton = document.getElementById('start-game-btn');
     const roleDisplay = document.getElementById('player-role');
     const gameStatusDisplay = document.getElementById('game-status');
+    let playerCount = 0;
 
-    let players = [];
+    addPlayerButton.addEventListener('click', function() {
+        playerCount++;
+        const newPlayerInput = document.createElement('input');
+        newPlayerInput.setAttribute('type', 'text');
+        newPlayerInput.setAttribute('placeholder', `プレイヤー${playerCount}の名前`);
+        newPlayerInput.classList.add('player-input');
+        document.getElementById('player-list').appendChild(newPlayerInput);
 
-    registerPlayerButton.addEventListener('click', function() {
-        const playerName = playerNameInput.value.trim();
-        if (playerName === '') {
-            alert('プレイヤー名を入力してください。');
-            return;
+        // プレイヤーが1人以上登録されたら設定画面へのボタンを表示
+        if (playerCount >= 1) {
+            startSetupButton.style.display = 'block';
         }
-        players.push(playerName);
-        playerNameInput.value = '';
-        alert(`プレイヤー「${playerName}」を登録しました。`);
+    });
+
+    startSetupButton.addEventListener('click', function() {
+        registrationContainer.style.display = 'none';
+        setupContainer.style.display = 'block';
     });
 
     startGameButton.addEventListener('click', function() {
-        const playerCount = players.length;
+        const playerNames = [];
+        document.querySelectorAll('.player-input').forEach(input => {
+            const playerName = input.value.trim();
+            if (playerName !== '') {
+                playerNames.push(playerName);
+            }
+        });
+
+        if (playerNames.length === 0) {
+            alert('プレイヤー名を入力してください。');
+            return;
+        }
+
         const selectedRoles = Array.from(rolesSelect.selectedOptions, option => option.value);
 
         if (selectedRoles.length === 0) {
@@ -32,18 +51,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (selectedRoles.length > playerCount) {
+        if (selectedRoles.length > playerNames.length) {
             alert('役職の数がプレイヤー人数より多いです。');
             return;
         }
 
         const gameMode = gameModeSelect.value;
-        setupGame(players, selectedRoles, gameMode);
+        setupGame(playerNames, selectedRoles, gameMode);
     });
 
     function setupGame(players, selectedRoles, gameMode) {
-        registrationContainer.style.display = 'none';
-        setupContainer.style.display = 'block';
+        setupContainer.style.display = 'none';
+        gameContainer.style.display = 'block';
 
         // プレイヤーの役職をランダムに選択して表示する
         const playerRole = {};
@@ -63,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // 役職を表示する
-        gameContainer.style.display = 'block';
         roleDisplay.textContent = `あなたの役職：${playerRole[players[0]]}`;
         gameStatusDisplay.textContent = `プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(playerRole).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}\n${gameModeMessage}`;
     }
