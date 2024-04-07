@@ -9,11 +9,64 @@ $(document).ready(function() {
 
     let players = [];
 
+    // プレイヤーを追加する
+    $('#add-player-btn').on('click', function() {
+        const playerName = prompt('プレイヤー名を入力してください:');
+        if (playerName && playerName.trim() !== '') {
+            players.push(playerName.trim());
+            displayPlayers();
+        }
+    });
+
+    // プレイヤーを削除する
+    $(document).on('click', '.remove-player-btn', function() {
+        const playerToRemove = $(this).closest('li').text();
+        players = players.filter(player => player !== playerToRemove);
+        displayPlayers();
+    });
+
+    // プレイヤー名を表示する
+    function displayPlayers() {
+        const $playerList = $('#player-list');
+        $playerList.empty();
+        players.forEach(function(player) {
+            const $playerItem = $('<li></li>').text(player);
+            const $removeBtn = $('<button class="remove-player-btn">削除</button>');
+            $playerItem.append($removeBtn);
+            $playerList.append($playerItem);
+        });
+
+        // プレイヤーが4人以上であれば設定画面へのボタンを表示
+        if (players.length >= 4) {
+            $('#goto-setup-btn').show();
+        } else {
+            $('#goto-setup-btn').hide();
+        }
+    }
+
     // 設定画面へ進む
     $('#goto-setup-btn').on('click', function() {
+        if ($('#game-mode').val() === 'offline') {
+            confirmPlayers();
+        } else {
+            setupRoles();
+            $setupContainer.show();
+        }
+    });
+
+    // 本人確認を行う
+    function confirmPlayers() {
+        const confirmedPlayers = [];
+        players.forEach(function(player) {
+            const confirmation = confirm(`${player} さん、あなたの役職を見せますか？`);
+            if (confirmation) {
+                confirmedPlayers.push(player);
+            }
+        });
+        players = confirmedPlayers; // 本人確認後のプレイヤーリストを更新
         setupRoles();
         $setupContainer.show();
-    });
+    }
 
     // 役職選択と人数選択を設定する
     function setupRoles() {
@@ -42,24 +95,6 @@ $(document).ready(function() {
             $roleItem.append($countInput);
             $roleList.append($roleItem);
         });
-
-        // 手渡しモードの場合、本人確認を行う
-        if ($('#game-mode').val() === 'offline') {
-            confirmPlayers();
-        }
-    }
-
-    // 本人確認を行う
-    function confirmPlayers() {
-        const confirmedPlayers = [];
-        players.forEach(function(player) {
-            const confirmation = confirm(`${player} さん、あなたの役職を見せますか？`);
-            if (confirmation) {
-                confirmedPlayers.push(player);
-            }
-        });
-        players = confirmedPlayers; // 本人確認後のプレイヤーリストを更新
-        displayPlayers();
     }
 
     // ゲームを開始する
@@ -104,40 +139,5 @@ $(document).ready(function() {
         // ゲーム開始メッセージを表示
         const gameMessage = `プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(playerRole).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}\nゲームを開始しました。`;
         $gameStatusDisplay.text(gameMessage);
-    }
-
-    // プレイヤーを追加する
-    $('#add-player-btn').on('click', function() {
-        const playerName = prompt('プレイヤー名を入力してください:');
-        if (playerName && playerName.trim() !== '') {
-            players.push(playerName.trim());
-            displayPlayers();
-        }
-    });
-
-    // プレイヤーを削除する
-    $(document).on('click', '.remove-player-btn', function() {
-        const playerToRemove = $(this).closest('li').text();
-        players = players.filter(player => player !== playerToRemove);
-        displayPlayers();
-    });
-
-    // プレイヤー名を表示する
-    function displayPlayers() {
-        const $playerList = $('#player-list');
-        $playerList.empty();
-        players.forEach(function(player) {
-            const $playerItem = $('<li></li>').text(player);
-            const $removeBtn = $('<button class="remove-player-btn">削除</button>');
-            $playerItem.append($removeBtn);
-            $playerList.append($playerItem);
-        });
-
-        // プレイヤーが登録されていれば設定画面へのボタンを表示
-        if (players.length > 0) {
-            $('#goto-setup-btn').show();
-        } else {
-            $('#goto-setup-btn').hide();
-        }
     }
 });
