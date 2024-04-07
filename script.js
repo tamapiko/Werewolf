@@ -1,88 +1,105 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const registrationContainer = document.getElementById('registration-container');
-    const setupContainer = document.getElementById('setup-container');
-    const gameContainer = document.getElementById('game-container');
-    const addPlayerButton = document.getElementById('add-player-btn');
-    const startSetupButton = document.getElementById('start-setup-btn');
-    const startGameButton = document.getElementById('start-game-btn');
-    const rolesSelect = document.getElementById('roles-select');
-    const gameModeSelect = document.getElementById('game-mode');
-    const roleDisplay = document.getElementById('player-role');
-    const gameStatusDisplay = document.getElementById('game-status');
-    let playerCount = 0;
+$(document).ready(function() {
+    const $playerList = $('#player-list');
+    const $sortableRoles = $('#sortable-roles');
+    const $addPlayerBtn = $('#add-player-btn');
+    const $gotoSetupBtn = $('#goto-setup-btn');
+    const $startGameBtn = $('#start-game-btn');
+    const $roleDisplay = $('#player-role');
+    const $gameStatusDisplay = $('#game-status');
 
-    addPlayerButton.addEventListener('click', function() {
-        playerCount++;
-        const newPlayerInput = document.createElement('input');
-        newPlayerInput.setAttribute('type', 'text');
-        newPlayerInput.setAttribute('placeholder', `プレイヤー${playerCount}の名前`);
-        newPlayerInput.classList.add('player-input');
-        document.getElementById('player-list').appendChild(newPlayerInput);
+    let players = [];
+    let roles = [];
 
-        // プレイヤーが1人以上登録されたら設定画面へのボタンを表示
-        if (playerCount >= 1) {
-            startSetupButton.style.display = 'block';
+    // プレイヤーを追加する
+    $addPlayerBtn.on('click', function() {
+        const playerName = prompt('プレイヤー名を入力してください:');
+        if (playerName && playerName.trim() !== '') {
+            players.push(playerName.trim());
+            displayPlayers();
         }
     });
 
-    startSetupButton.addEventListener('click', function() {
-        registrationContainer.style.display = 'none';
-        setupContainer.style.display = 'block';
-    });
-
-    startGameButton.addEventListener('click', function() {
-        const playerNames = [];
-        document.querySelectorAll('.player-input').forEach(input => {
-            const playerName = input.value.trim();
-            if (playerName !== '') {
-                playerNames.push(playerName);
-            }
+    // プレイヤー名を表示する
+    function displayPlayers() {
+        $playerList.empty();
+        players.forEach(function(player) {
+            const $playerItem = $('<li></li>').text(player);
+            const $removeBtn = $('<button>削除</button>').click(function() {
+                const index = players.indexOf(player);
+                if (index !== -1) {
+                    players.splice(index, 1);
+                    displayPlayers();
+                }
+            });
+            $playerItem.append($removeBtn);
+            $playerList.append($playerItem);
         });
 
-        if (playerNames.length === 0) {
-            alert('プレイヤー名を入力してください。');
-            return;
+        // プレイヤーが登録されていれば設定画面へのボタンを表示
+        if (players.length > 0) {
+            $gotoSetupBtn.show();
+        } else {
+            $gotoSetupBtn.hide();
         }
+    }
 
-        const selectedRoles = Array.from(rolesSelect.selectedOptions, option => option.value);
+    // 設定画面へ進む
+    $gotoSetupBtn.on('click', function() {
+        roles = [];
+        $playerList.sortable({
+            placeholder: 'ui-state-highlight'
+        });
+
+        // 役職の選択リストを作成
+        const availableRoles = ['村人', '人狼', '占い師', '霊媒師', '狩人', '共有者', '妖狐'];
+        availableRoles.forEach(function(role) {
+            const $roleItem = $('<li></li>').text(role);
+            $sortableRoles.append($roleItem);
+        });
+
+        $registrationContainer.hide();
+        $setupContainer.show();
+    });
+
+    // ゲームを開始する
+    $startGameBtn.on('click', function() {
+        const selectedRoles = [];
+        $('#sortable-roles li').each(function() {
+            selectedRoles.push($(this).text());
+        });
 
         if (selectedRoles.length === 0) {
             alert('少なくとも1つの役職を選択してください。');
             return;
         }
 
-        if (selectedRoles.length > playerNames.length) {
+        if (selectedRoles.length > players.length) {
             alert('役職の数がプレイヤー人数より多いです。');
             return;
         }
 
-        const gameMode = gameModeSelect.value;
-        setupGame(playerNames, selectedRoles, gameMode);
+        const gameMode = $('#game-mode').val();
+        setupGame(players, selectedRoles, gameMode);
     });
 
+    // ゲームを設定する
     function setupGame(players, selectedRoles, gameMode) {
-        setupContainer.style.display = 'none';
-        gameContainer.style.display = 'block';
+        $setupContainer.hide();
+        $gameContainer.show();
 
-        // プレイヤーの役職をランダムに選択して表示する
+        // プレイヤーの役職をランダムに割り当てて表示
         const playerRole = {};
-        players.forEach(player => {
-            const randomRoleIndex = Math.floor(Math.random() * selectedRoles.length);
-            const role = selectedRoles[randomRoleIndex];
+        players.forEach(function(player) {
+            const randomIndex = Math.floor(Math.random() * selectedRoles.length);
+            const role = selectedRoles.splice(randomIndex, 1)[0];
             playerRole[player] = role;
-            selectedRoles.splice(randomRoleIndex, 1); // 選択した役職から削除する
         });
 
-        // ゲームモードによって異なるメッセージを表示する
-        let gameModeMessage = '';
-        if (gameMode === 'online') {
-            gameModeMessage = 'オンラインモードでゲームを開始しました。';
-        } else if (gameMode === 'offline') {
-            gameModeMessage = 'オフライン（手渡し）モードでゲームを開始しました。';
-        }
+        // ゲームモードに応じたメッセージを表示
+        const gameModeMessage = (gameMode === 'online') ? 'オンラインモードでゲームを開始しました。' : 'オフライン（手渡し）モードでゲームを開始しました。';
 
-        // 役職を表示する
-        roleDisplay.textContent = `あなたの役職：${playerRole[players[0]]}`;
-        gameStatusDisplay.textContent = `プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(playerRole).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}\n${gameModeMessage}`;
+        // 役職を表示
+        $roleDisplay.text(`あなたの役職：${playerRole[players[0]]}`);
+        $gameStatusDisplay.text(`プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(playerRole).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}\n${gameModeMessage}`);
     }
 });
