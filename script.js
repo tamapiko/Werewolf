@@ -6,23 +6,44 @@ $(document).ready(function() {
     const $gameContainer = $('#game-container');
     const $roleDisplay = $('#player-role');
     const $gameStatusDisplay = $('#game-status');
+    const $addPlayerBtn = $('#add-player-btn');
+    const $removePlayerBtn = $('#remove-player-btn');
 
     let players = [];
+    let gameStarted = false;
 
     // プレイヤーを追加する
-    $('#add-player-btn').on('click', function() {
-        const playerName = prompt('プレイヤー名を入力してください:');
-        if (playerName && playerName.trim() !== '') {
-            players.push(playerName.trim());
-            displayPlayers();
+    $addPlayerBtn.on('click', function() {
+        if (!gameStarted) {
+            const playerName = prompt('プレイヤー名を入力してください:');
+            if (playerName && playerName.trim() !== '') {
+                // 重複チェック
+                if (!players.includes(playerName.trim())) {
+                    players.push(playerName.trim());
+                    displayPlayers();
+                } else {
+                    alert('そのプレイヤー名は既に存在します。別の名前を入力してください。');
+                }
+            }
+        } else {
+            alert('ゲームが既に開始されています。プレイヤーの追加はできません。');
         }
     });
 
     // プレイヤーを削除する
-    $(document).on('click', '.remove-player-btn', function() {
-        const playerToRemove = $(this).closest('li').text();
-        players = players.filter(player => player !== playerToRemove);
-        displayPlayers();
+    $removePlayerBtn.on('click', function() {
+        if (!gameStarted) {
+            const playerName = prompt('削除するプレイヤー名を入力してください:');
+            const index = players.indexOf(playerName);
+            if (index !== -1) {
+                players.splice(index, 1);
+                displayPlayers();
+            } else {
+                alert('指定されたプレイヤーが見つかりませんでした。');
+            }
+        } else {
+            alert('ゲームが既に開始されています。プレイヤーの削除はできません。');
+        }
     });
 
     // プレイヤー名を表示する
@@ -31,42 +52,26 @@ $(document).ready(function() {
         $playerList.empty();
         players.forEach(function(player) {
             const $playerItem = $('<li></li>').text(player);
-            const $removeBtn = $('<button class="remove-player-btn">削除</button>');
-            $playerItem.append($removeBtn);
             $playerList.append($playerItem);
         });
 
         // プレイヤーが4人以上であれば設定画面へのボタンを表示
-        if (players.length >= 4) {
-            $('#goto-setup-btn').show();
+        if (players.length >= 4 && !gameStarted) {
+            $gotoSetupBtn.show();
         } else {
-            $('#goto-setup-btn').hide();
+            $gotoSetupBtn.hide();
         }
     }
 
     // 設定画面へ進む
-    $('#goto-setup-btn').on('click', function() {
-        if ($('#game-mode').val() === 'offline') {
-            confirmPlayers();
-        } else {
+    $gotoSetupBtn.on('click', function() {
+        if (!gameStarted) {
             setupRoles();
             $setupContainer.show();
+        } else {
+            alert('ゲームが既に開始されています。設定はできません。');
         }
     });
-
-    // 本人確認を行う
-    function confirmPlayers() {
-        const confirmedPlayers = [];
-        players.forEach(function(player) {
-            const confirmation = confirm(`${player} さん、あなたの役職を見せますか？`);
-            if (confirmation) {
-                confirmedPlayers.push(player);
-            }
-        });
-        players = confirmedPlayers; // 本人確認後のプレイヤーリストを更新
-        setupRoles();
-        $setupContainer.show();
-    }
 
     // 役職選択と人数選択を設定する
     function setupRoles() {
@@ -82,41 +87,53 @@ $(document).ready(function() {
             '妖狐': '妖狐は人狼を倒すことができますが、占い師には人狼と判定されてしまいます。'
         };
 
-        // 役職ごとに選択肢を追加
+        // 役職ごとに選択ボタンを追加
         Object.entries(availableRoles).forEach(([role, description]) => {
             const $roleItem = $('<li></li>');
-            const $roleLabel = $('<span></span>').text(role);
-            const $roleDescription = $('<span></span>').text(description);
-            const $countInput = $('<input type="number" min="0" value="0">');
-
-            $roleItem.append($roleLabel);
+            const $roleBtn = $('<button></button>').text(role);
+            $roleBtn.on('click', function() {
+                if (!gameStarted) {
+                    const count = players.length;
+                    const $countInput = $(`<input type="number" min="0" max="${count}" value="0">`);
+                    $roleItem.append($countInput);
+                    $(this).prop('disabled', true); // 役職ボタンを無効化
+                } else {
+                    alert('ゲームが既に開始されています。役職の選択はできません。');
+                }
+            });
+            $roleItem.append($roleBtn);
             $roleItem.append(' - ');
-            $roleItem.append($roleDescription);
-            $roleItem.append($countInput);
+            $roleItem.append(description);
             $roleList.append($roleItem);
         });
     }
 
     // ゲームを開始する
-    $('#start-game-btn').on('click', function() {
-        const selectedRoles = [];
+    $startGameBtn.on('click', function() {
+        if (!gameStarted) {
+            const selectedRoles = [];
 
-        // 選択された役職と人数を取得
-        $('#role-list li').each(function() {
-            const role = $(this).find('span:first').text();
-            const count = parseInt($(this).find('input').val());
-            for (let i = 0; i < count; i++) {
-                selectedRoles.push(role);
+            // 選択された役職と人数を取得
+            $('#role-list li').each(function() {
+                const $roleItem = $(this);
+                const role = $roleItem.find('button').text();
+                const count = parseInt($roleItem.find('input').val());
+                for (let i = 0; i < count; i++) {
+                    selectedRoles.push(role);
+                }
+            });
+
+            if (selectedRoles.length === 0) {
+                alert('少なくとも1つの役職を選択してください。');
+                return;
             }
-        });
 
-        if (selectedRoles.length === 0) {
-            alert('少なくとも1つの役職を選択してください。');
-            return;
+            // 役職の割り当てとゲーム開始処理
+            assignRoles(selectedRoles);
+            gameStarted = true; // ゲームが開始されたフラグを立てる
+        } else {
+            alert('ゲームが既に開始されています。');
         }
-
-        // 役職の割り当てとゲーム開始処理
-        assignRoles(selectedRoles);
     });
 
     // 役職の割り当てとゲーム開始処理
