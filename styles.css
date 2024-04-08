@@ -55,29 +55,48 @@ button:hover {
 }
 
 #player-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 10px;
-}
-
-#player-list li {
-    margin-bottom: 5px;
-}
-
-.role-setting {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     margin-bottom: 10px;
+}
+
+.player-card {
+    width: 120px;
+    height: 180px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.player-name {
+    font-size: 16px;
+    text-align: center;
+}
+
+.delete-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ff4d88; /* ダークピンク */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
 .role-icon {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-    border-radius: 50%; /* 円形アイコン */
-}
-
-#player-role-display, #game-status-display {
-    text-align: center;
-    margin-bottom: 20px;
+    width: 50px;
+    height: 50px;
+    align-self: center;
 }
