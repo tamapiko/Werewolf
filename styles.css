@@ -1,7 +1,7 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: black;
-    color: white;
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
     margin: 0;
     padding: 0;
     display: flex;
@@ -13,10 +13,10 @@ body {
 .container {
     width: 80%;
     max-width: 800px;
-    background-color: #333;
+    background-color: #fff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 header {
@@ -26,8 +26,7 @@ header {
 
 h1 {
     font-size: 36px;
-    color: red;
-    text-shadow: 2px 2px 4px #000000;
+    color: #ff6699;
 }
 
 .container-section {
@@ -37,8 +36,8 @@ h1 {
 button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #ff0000;
-    color: white;
+    background-color: #ff6699;
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -46,7 +45,7 @@ button {
 }
 
 button:hover {
-    background-color: #cc0000;
+    background-color: #ff4d88;
 }
 
 #setup-container, #game-container {
@@ -65,8 +64,19 @@ button:hover {
     margin-bottom: 5px;
 }
 
+.role-setting {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.role-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
 #player-role-display, #game-status-display {
     text-align: center;
     margin-bottom: 20px;
 }
-
