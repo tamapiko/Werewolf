@@ -1,15 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     const players = [];
+    const roleCounts = {
+        'villager': 0,
+        'werewolf': 0,
+        // 他の役職も追加
+    };
+
     const $playerList = document.getElementById('player-list');
+    const $roleSettings = document.getElementById('role-settings');
     const $addPlayerBtn = document.getElementById('add-player-btn');
-    const $removePlayerBtn = document.getElementById('remove-player-btn');
     const $gotoSetupBtn = document.getElementById('goto-setup-btn');
-    const $startGameBtn = document.getElementById('start-game-btn');
     const $setupContainer = document.getElementById('setup-container');
     const $gameContainer = document.getElementById('game-container');
     const $playerRoleDisplay = document.getElementById('player-role');
+    const $playerRoleIcon = document.getElementById('player-role-icon');
     const $gameStatusDisplay = document.getElementById('game-status');
 
+    // プレイヤー追加ボタン
     $addPlayerBtn.addEventListener('click', function() {
         const playerName = prompt('プレイヤー名を入力してください:');
         if (playerName && playerName.trim() !== '') {
@@ -18,20 +25,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    $removePlayerBtn.addEventListener('click', function() {
-        const playerName = prompt('削除するプレイヤー名を入力してください:');
-        const index = players.indexOf(playerName);
-        if (index !== -1) {
-            players.splice(index, 1);
-            renderPlayerList();
-        }
+    // 役職人数変更ボタン
+    const $numBtns = document.querySelectorAll('.num-btn');
+    $numBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const role = btn.getAttribute('data-role');
+            if (role) {
+                if (btn.textContent === '-') {
+                    if (roleCounts[role] > 0) {
+                        roleCounts[role]--;
+                        updateRoleCount(role);
+                    }
+                } else if (btn.textContent === '+') {
+                    roleCounts[role]++;
+                    updateRoleCount(role);
+                }
+            }
+        });
     });
 
+    // 役職人数更新
+    function updateRoleCount(role) {
+        const $countSpan = document.getElementById(`${role}-count`);
+        if ($countSpan) {
+            $countSpan.textContent = roleCounts[role];
+        }
+    }
+
+    // プレイヤーリスト表示
     function renderPlayerList() {
         $playerList.innerHTML = '';
         players.forEach(function(player) {
             const playerItem = document.createElement('li');
             playerItem.textContent = player;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '削除';
+            removeBtn.addEventListener('click', function() {
+                const index = players.indexOf(player);
+                if (index !== -1) {
+                    players.splice(index, 1);
+                    renderPlayerList();
+                }
+            });
+
+            playerItem.appendChild(removeBtn);
             $playerList.appendChild(playerItem);
         });
 
@@ -42,48 +80,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 設定完了ボタン
     $gotoSetupBtn.addEventListener('click', function() {
         setupRoles();
         $setupContainer.style.display = 'none';
         $gameContainer.style.display = 'block';
     });
 
+    // 役職設定処理
     function setupRoles() {
-        // 役職選択の処理を実装する
-        const roles = ['村人', '人狼', '占い師', '霊媒師', '狩人', '共有者', '妖狐'];
-        const roleDistribution = assignRoles(roles, players.length);
+        // ここに役職設定のロジックを追加する
+        // 役職アイコンの表示や役職説明、初夜占いなしの設定などを実装する
+        // 例:
         const currentPlayer = players[0];
-        const playerRole = roleDistribution[currentPlayer];
-        $playerRoleDisplay.textContent = `あなたの役職: ${playerRole}`;
+        const playerRole = '村人'; // 仮の役職
+        const roleIcon = 'villager_icon.png'; // 仮の役職アイコン
 
-        const gameStatus = `プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(roleDistribution).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}`;
+        $playerRoleDisplay.textContent = `あなたの役職: ${playerRole}`;
+        $playerRoleIcon.src = roleIcon;
+
+        const gameStatus = `プレイヤー: ${players.join(', ')}\n役職: 村人 (${roleCounts['villager']}名), 人狼 (${roleCounts['werewolf']}名)`; // 役職に合わせて変更する
         $gameStatusDisplay.textContent = gameStatus;
     }
-
-    function assignRoles(roles, numPlayers) {
-        const roleDistribution = {};
-        const shuffledRoles = shuffle(roles.slice()); // 配列をシャッフルする関数
-        for (let i = 0; i < numPlayers; i++) {
-            const player = players[i];
-            const role = shuffledRoles[i % roles.length];
-            roleDistribution[player] = role;
-        }
-        return roleDistribution;
-    }
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    $startGameBtn.addEventListener('click', function() {
-        if (players.length >= 4) {
-            alert('ゲームを開始します！');
-        } else {
-            alert('プレイヤーが4人以上必要です。');
-        }
-    });
 });
