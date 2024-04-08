@@ -69,6 +69,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ゲーム設定へ移動するボタンのクリックイベント
     $gotoSetupBtn.addEventListener('click', function() {
         setupRoles();
+        $playerRegistration.style.display = 'none'; // メンバー登録画面を非表示にする
+        $setupContainer.style.display = 'block'; // ゲーム設定画面を表示する
     });
 
     // 役職選択処理
@@ -78,7 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
         roles.forEach(function(role) {
             const roleOption = document.createElement('div');
             roleOption.classList.add('role-option');
-            roleOption.textContent = role;
+
+            const roleName = document.createElement('span');
+            roleName.textContent = role;
 
             const roleCountInput = document.createElement('input');
             roleCountInput.setAttribute('type', 'number');
@@ -86,12 +90,10 @@ document.addEventListener('DOMContentLoaded', function() {
             roleCountInput.setAttribute('max', players.length.toString());
             roleCountInput.value = '0';
 
+            roleOption.appendChild(roleName);
             roleOption.appendChild(roleCountInput);
             $roleList.appendChild(roleOption);
         });
-
-        $setupContainer.style.display = 'none';
-        $gameContainer.style.display = 'block';
     }
 
     // ゲーム開始ボタンのクリックイベント
