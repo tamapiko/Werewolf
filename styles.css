@@ -74,6 +74,7 @@ button:hover {
     width: 30px;
     height: 30px;
     margin-right: 10px;
+    border-radius: 50%; /* 円形アイコンにする */
 }
 
 #player-role-display, #game-status-display {
