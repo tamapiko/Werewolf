@@ -3,24 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const $addPlayerBtn = document.getElementById('add-player-btn');
     const $gotoSetupBtn = document.getElementById('goto-setup-btn');
     const $setupContainer = document.getElementById('setup-container');
+    const $roleList = document.getElementById('role-list');
+    const $startGameBtn = document.getElementById('start-game-btn');
     const $gameContainer = document.getElementById('game-container');
     const $playerRoleDisplay = document.getElementById('player-role-display');
-    const $playerRole = document.getElementById('player-role');
     const $gameStatusDisplay = document.getElementById('game-status');
     
     let players = [];
-    let roleCounts = {
-        'villager': 0,
-        'werewolf': 0,
-        'fortune-teller': 0,
-        'guard': 0,
-        'hunter': 0,
-        'witch': 0,
-        'medium': 0,
-        'cursed': 0,
-        'mason': 0,
-        'traitor': 0
-    };
+    let roles = [];
 
     // プレイヤー追加ボタンのクリックイベント
     $addPlayerBtn.addEventListener('click', function() {
@@ -76,51 +66,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 設定完了ボタンのクリックイベント
+    // ゲーム設定へ移動するボタンのクリックイベント
     $gotoSetupBtn.addEventListener('click', function() {
-        setupRoles(); // 役職設定を先に行う
+        setupRoles();
     });
 
-    // 役職設定処理
+    // 役職選択処理
     function setupRoles() {
-        const roles = Object.keys(roleCounts);
+        roles = ['村人', '人狼', '占い師', '狩人', '霊媒師', '狂人', '共有者', '妖狐', '猫又', 'ボディーガード'];
+        $roleList.innerHTML = '';
         roles.forEach(function(role) {
-            let count = parseInt(prompt(`役職「${role}」の人数を入力してください：`));
-            while (isNaN(count) || count < 0 || count > players.length) {
-                count = parseInt(prompt(`無効な入力です。役職「${role}」の人数を再度入力してください：`));
-            }
-            roleCounts[role] = count;
-        });
+            const roleOption = document.createElement('div');
+            roleOption.classList.add('role-option');
+            roleOption.textContent = role;
 
-        confirmPlayerRoles(); // 本人確認を行う
-    }
+            const roleCountInput = document.createElement('input');
+            roleCountInput.setAttribute('type', 'number');
+            roleCountInput.setAttribute('min', '0');
+            roleCountInput.setAttribute('max', players.length.toString());
+            roleCountInput.value = '0';
 
-    // 本人確認処理
-    function confirmPlayerRoles() {
-        players.forEach(function(player) {
-            const confirmMessage = `本人確認：${player} さん、あなたの役職を表示しますか？`;
-            if (confirm(confirmMessage)) {
-                assignRole(player);
-            }
+            roleOption.appendChild(roleCountInput);
+            $roleList.appendChild(roleOption);
         });
 
         $setupContainer.style.display = 'none';
         $gameContainer.style.display = 'block';
     }
 
-    // 役職をプレイヤーに割り当てる
-    function assignRole(playerName) {
-        let availableRoles = [];
-        Object.keys(roleCounts).forEach(function(role) {
-            for (let i = 0; i < roleCounts[role]; i++) {
-                availableRoles.push(role);
+    // ゲーム開始ボタンのクリックイベント
+    $startGameBtn.addEventListener('click', function() {
+        assignRoles();
+    });
+
+    // 役職割り当て処理
+    function assignRoles() {
+        roles.forEach(function(role, index) {
+            const roleCountInput = $roleList.children[index].querySelector('input');
+            const count = parseInt(roleCountInput.value);
+            if (count > 0) {
+                assignRoleToPlayers(role, count);
             }
         });
+    }
 
-        const randomIndex = Math.floor(Math.random() * availableRoles.length);
-        const assignedRole = availableRoles.splice(randomIndex, 1)[0];
-        const roleDisplayMessage = `${playerName} さん、あなたの役職は「${assignedRole}」です。`;
-        alert(roleDisplayMessage);
-        $playerRoleDisplay.textContent = roleDisplayMessage;
+    // プレイヤーに役職を割り当てる
+    function assignRoleToPlayers(role, count) {
+        const assignedPlayers = [];
+        for (let i = 0; i < count; i++) {
+            let playerIndex = getRandomPlayerIndex();
+            while (assignedPlayers.includes(playerIndex)) {
+                playerIndex = getRandomPlayerIndex();
+            }
+            assignedPlayers.push(playerIndex);
+            const playerName = players[playerIndex];
+            const roleDisplayMessage = `${playerName} さんの役職は「${role}」です。`;
+            alert(roleDisplayMessage);
+        }
+    }
+
+    // ランダムなプレイヤーインデックスを取得する
+    function getRandomPlayerIndex() {
+        return Math.floor(Math.random() * players.length);
     }
 });
