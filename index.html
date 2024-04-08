@@ -4,39 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>人狼ゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="registration-container" class="game-container">
-        <h1>プレイメンバー登録</h1>
-        <ul id="player-list"></ul>
-        <button id="add-player-btn">＋ プレイヤーを追加する</button>
-        <button id="goto-setup-btn" style="display: none;">設定画面へ進む</button>
+    <div class="container">
+        <header>
+            <h1>人狼ゲーム</h1>
+        </header>
+        <main>
+            <div id="setup-container" class="container-section">
+                <h2>ゲーム設定</h2>
+                <div id="player-list">
+                    <!-- プレイヤーリスト -->
+                </div>
+                <button id="add-player-btn">プレイヤー追加</button>
+                <button id="remove-player-btn">プレイヤー削除</button>
+                <button id="goto-setup-btn" style="display: none;">設定を完了して役職を選択する</button>
+            </div>
+
+            <div id="game-container" class="container-section" style="display: none;">
+                <h2>ゲーム画面</h2>
+                <div id="player-role-display">
+                    <h3>あなたの役職</h3>
+                    <p id="player-role"></p>
+                </div>
+                <div id="game-status-display">
+                    <h3>ゲームステータス</h3>
+                    <p id="game-status"></p>
+                </div>
+                <button id="start-game-btn">ゲームを開始する</button>
+            </div>
+        </main>
     </div>
 
-    <div id="setup-container" class="game-container" style="display: none;">
-        <h1>役職選択とモード選択</h1>
-        <ul id="role-list" class="sortable-list">
-            <!-- ここに役職選択の項目が動的に追加されます -->
-        </ul>
-        <label for="game-mode">ゲームモード：</label>
-        <select id="game-mode">
-            <option value="online">オンラインモード</option>
-            <option value="offline">オフライン（手渡し）モード</option>
-        </select>
-        <button id="start-game-btn">ゲームを開始する</button>
-    </div>
-
-    <div id="game-container" class="game-container" style="display: none;">
-        <h1>人狼ゲーム</h1>
-        <div id="role-display">
-            <p id="player-role">あなたの役職：-</p>
-        </div>
-        <div id="game-status"></div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
