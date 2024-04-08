@@ -8,6 +8,8 @@ $(document).ready(function() {
     const $gameStatusDisplay = $('#game-status');
     const $addPlayerBtn = $('#add-player-btn');
     const $removePlayerBtn = $('#remove-player-btn');
+    const $gameRules = $('#game-rules');
+    const $confirmIdentityBtn = $('#confirm-identity-btn');
 
     let players = [];
     let gameStarted = false;
@@ -111,50 +113,46 @@ $(document).ready(function() {
     // ゲームを開始する
     $startGameBtn.on('click', function() {
         if (!gameStarted) {
-            const selectedRoles = [];
-
-            // 選択された役職と人数を取得
-            $('#role-list li').each(function() {
-                const $roleItem = $(this);
-                const role = $roleItem.find('button').text();
-                const count = parseInt($roleItem.find('input').val());
-                for (let i = 0; i < count; i++) {
-                    selectedRoles.push(role);
-                }
-            });
-
-            if (selectedRoles.length === 0) {
-                alert('少なくとも1つの役職を選択してください。');
+            if (players.length < 4) {
+                alert('プレイヤーが4人未満です。ゲームを開始できません。');
                 return;
             }
 
-            // 役職の割り当てとゲーム開始処理
-            assignRoles(selectedRoles);
-            gameStarted = true; // ゲームが開始されたフラグを立てる
+            $setupContainer.hide(); // 設定画面を非表示にする
+
+            // ゲームのルール説明を表示
+            $gameRules.html(`
+                <p>ゲームを開始します。</p>
+                <p>プレイヤーは役職を知られないようにプレイします。</p>
+                <p>役職はゲームマスターによってランダムに割り当てられます。</p>
+                <p>ゲームを進行するには、逐次ゲームマスターの指示に従ってください。</p>
+            `);
+
+            // 本人確認ボタンを表示
+            $confirmIdentityBtn.show();
         } else {
             alert('ゲームが既に開始されています。');
         }
     });
 
-    // 役職の割り当てとゲーム開始処理
-    function assignRoles(selectedRoles) {
-        $setupContainer.hide();
-        $gameContainer.show();
+    // 本人確認を行う
+    $confirmIdentityBtn.on('click', function() {
+        if (!gameStarted) {
+            alert('ゲームが開始されていません。');
+            return;
+        }
 
-        // プレイヤーの役職をランダムに割り当てて表示
-        const playerRole = {};
-        players.forEach(function(player) {
-            const roleIndex = Math.floor(Math.random() * selectedRoles.length);
-            const role = selectedRoles.splice(roleIndex, 1)[0];
-            playerRole[player] = role;
-        });
-
-        // 役職を表示
         const currentPlayer = players[0];
-        $roleDisplay.text(`あなたの役職：${playerRole[currentPlayer]}`);
+        const confirmationCode = prompt(`プレイヤー: ${currentPlayer} さん、本人確認のため以下のコードを入力してください:`);
+        // ここで本人確認の処理を行う (例: ゲームマスターがコードを確認して役職を表示する)
+        // 役職表示の処理を記述
+        $roleDisplay.text(`あなたの役職：[役職名]`);
 
-        // ゲーム開始メッセージを表示
-        const gameMessage = `プレイヤー: ${players.join(', ')}\n役職: ${Object.entries(playerRole).map(entry => `${entry[0]} (${entry[1]})`).join(', ')}\nゲームを開始しました。`;
+        // ゲームステータスを更新
+        const gameMessage = `プレイヤー: ${players.join(', ')}\nゲームを開始しました。`;
         $gameStatusDisplay.text(gameMessage);
-    }
+
+        // 本人確認ボタンを非表示にする
+        $confirmIdentityBtn.hide();
+    });
 });
