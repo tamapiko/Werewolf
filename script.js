@@ -78,13 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 設定完了ボタンのクリックイベント
     $gotoSetupBtn.addEventListener('click', function() {
-        if (confirm('本人確認を行いますか？（オフラインモードのみ）')) {
-            setupRoles();
-            $setupContainer.style.display = 'none';
-            $gameContainer.style.display = 'block';
-        } else {
-            alert('本人確認に失敗しました。');
-        }
+        setupRoles(); // 役職設定を先に行う
     });
 
     // 役職設定処理
@@ -98,11 +92,24 @@ document.addEventListener('DOMContentLoaded', function() {
             roleCounts[role] = count;
         });
 
-        assignRolesToPlayers(); // 役職をプレイヤーに割り当てる
+        confirmPlayerRoles(); // 本人確認を行う
+    }
+
+    // 本人確認処理
+    function confirmPlayerRoles() {
+        players.forEach(function(player) {
+            const confirmMessage = `本人確認：${player} さん、あなたの役職を表示しますか？`;
+            if (confirm(confirmMessage)) {
+                assignRole(player);
+            }
+        });
+
+        $setupContainer.style.display = 'none';
+        $gameContainer.style.display = 'block';
     }
 
     // 役職をプレイヤーに割り当てる
-    function assignRolesToPlayers() {
+    function assignRole(playerName) {
         let availableRoles = [];
         Object.keys(roleCounts).forEach(function(role) {
             for (let i = 0; i < roleCounts[role]; i++) {
@@ -110,18 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        players.forEach(function(player) {
-            const randomIndex = Math.floor(Math.random() * availableRoles.length);
-            const assignedRole = availableRoles.splice(randomIndex, 1)[0];
-            const confirmMessage = `本人確認：${player} さん、あなたの役職は「${assignedRole}」です。`;
-            alert(confirmMessage);
-            displayPlayerRole(player, assignedRole); // プレイヤーに役職を表示する
-        });
-    }
-
-    // プレイヤーに役職を表示する
-    function displayPlayerRole(playerName, role) {
-        const roleDisplayMessage = `${playerName} さん、あなたの役職は「${role}」です。`;
+        const randomIndex = Math.floor(Math.random() * availableRoles.length);
+        const assignedRole = availableRoles.splice(randomIndex, 1)[0];
+        const roleDisplayMessage = `${playerName} さん、あなたの役職は「${assignedRole}」です。`;
         alert(roleDisplayMessage);
         $playerRoleDisplay.textContent = roleDisplayMessage;
     }
