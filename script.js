@@ -89,24 +89,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 役職設定処理
     function setupRoles() {
-        players.forEach(function(player) {
-            const confirmMessage = `本人確認：${player} さん、あなたの役職を表示しますか？`;
-            const confirmed = confirm(confirmMessage);
-            if (confirmed) {
-                assignRole(player);
+        const roles = Object.keys(roleCounts);
+        roles.forEach(function(role) {
+            let count = parseInt(prompt(`役職「${role}」の人数を入力してください：`));
+            while (isNaN(count) || count < 0 || count > players.length) {
+                count = parseInt(prompt(`無効な入力です。役職「${role}」の人数を再度入力してください：`));
             }
+            roleCounts[role] = count;
+        });
+
+        assignRolesToPlayers(); // 役職をプレイヤーに割り当てる
+    }
+
+    // 役職をプレイヤーに割り当てる
+    function assignRolesToPlayers() {
+        let availableRoles = [];
+        Object.keys(roleCounts).forEach(function(role) {
+            for (let i = 0; i < roleCounts[role]; i++) {
+                availableRoles.push(role);
+            }
+        });
+
+        players.forEach(function(player) {
+            const randomIndex = Math.floor(Math.random() * availableRoles.length);
+            const assignedRole = availableRoles.splice(randomIndex, 1)[0];
+            const confirmMessage = `本人確認：${player} さん、あなたの役職は「${assignedRole}」です。`;
+            alert(confirmMessage);
+            displayPlayerRole(player, assignedRole); // プレイヤーに役職を表示する
         });
     }
 
-    // 役職割り当て
-    function assignRole(playerName) {
-        const roles = Object.keys(roleCounts).filter(role => roleCounts[role] > 0);
-        const randomRole = roles[Math.floor(Math.random() * roles.length)];
-
-        $playerRoleDisplay.textContent = `あなたの役職：${randomRole}`;
-        $playerRole.textContent = '';
-
-        const gameStatus = `プレイヤー: ${players.join(', ')}\n役職: 村人 (${roleCounts['villager']}名), 人狼 (${roleCounts['werewolf']}名), 占い師 (${roleCounts['fortune-teller']}名), 守護者 (${roleCounts['guard']}名), 狩人 (${roleCounts['hunter']}名), 魔女 (${roleCounts['witch']}名), 霊媒師 (${roleCounts['medium']}名), 呪われし者 (${roleCounts['cursed']}名), 共有者 (${roleCounts['mason']}名), 裏切り者 (${roleCounts['traitor']}名)`; // 役職に合わせて変更する
-        $gameStatusDisplay.textContent = gameStatus;
+    // プレイヤーに役職を表示する
+    function displayPlayerRole(playerName, role) {
+        const roleDisplayMessage = `${playerName} さん、あなたの役職は「${role}」です。`;
+        alert(roleDisplayMessage);
+        $playerRoleDisplay.textContent = roleDisplayMessage;
     }
 });
