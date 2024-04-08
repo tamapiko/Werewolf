@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             players.push(playerName);
             renderPlayerList();
         } else {
-            alert('入力された名前は無効です。もう一度お試しください。');
+            alert('無効な名前です。もう一度お試しください。');
         }
     });
 
@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupRoles() {
         players.forEach(function(player) {
             const confirmMessage = `本人確認：${player} さん、あなたの役職を表示しますか？`;
-            if (confirm(confirmMessage)) {
+            const confirmed = confirm(confirmMessage);
+            if (confirmed) {
                 assignRole(player);
             }
         });
