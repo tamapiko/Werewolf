@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+    background-color: #ffe6f2; /* ライトピンク */
     color: #333;
     margin: 0;
     padding: 0;
@@ -13,9 +13,9 @@ body {
 .container {
     width: 80%;
     max-width: 800px;
-    background-color: #fff;
+    background-color: #ffffff; /* ホワイト */
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -26,7 +26,7 @@ header {
 
 h1 {
     font-size: 36px;
-    color: #ff6699;
+    color: #ff6699; /* ピンク */
 }
 
 .container-section {
@@ -36,7 +36,7 @@ h1 {
 button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #ff6699;
+    background-color: #ff6699; /* ピンク */
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -45,7 +45,7 @@ button {
 }
 
 button:hover {
-    background-color: #ff4d88;
+    background-color: #ff4d88; /* ダークピンク */
 }
 
 #setup-container, #game-container {
@@ -74,7 +74,7 @@ button:hover {
     width: 30px;
     height: 30px;
     margin-right: 10px;
-    border-radius: 50%; /* 円形アイコンにする */
+    border-radius: 50%; /* 円形アイコン */
 }
 
 #player-role-display, #game-status-display {
