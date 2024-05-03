@@ -3,7 +3,7 @@
 	"short_name": "人狼",
 	"description": "人狼",
 	"start_url": "./index.html",
-	"display": "fullscreen",
+	"display": "standalone",
 	"theme_color": "#182246",
 	"background_color": "#182246",
 	"orientation": "any",
@@ -11,22 +11,22 @@
 		{
 			"src": "./appicon48.png",
 			"sizes": "48x48",
-			"purpose": "maskable"
+			"type": "image/png"
 		},
 		{
 			"src": "./appicon96.png",
 			"sizes": "96x96",
-			"purpose": "maskable"
+			"type": "image/png"
 		},
 		{
 			"src": "./appicon192.png",
 			"sizes": "192x192",
-			"purpose": "maskable"
+			"type": "image/png"
 		},
 		{
 			"src": "./appicon512.png",
 			"sizes": "512x512",
-			"purpose": "maskable"
+			"type": "image/png"
 		}
 	]
 }
