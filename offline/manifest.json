@@ -5,7 +5,7 @@
 	"start_url": "./index.html",
 	"display": "standalone",
 	"theme_color": "#00000000",
-	"background_color": "#00000000",
+	"background_color": "#FFFFFF", // こちらを画面いっぱいにするために白色に変更しました
 	"orientation": "any",
 	"icons": [
 		{
@@ -28,5 +28,8 @@
 			"sizes": "512x512",
 			"type": "image/png"
 		}
-	]
+	],
+	"status_bar": {
+		"status_bar_color": "#00000000" // 時間やバッテリー残量の表示を透明にするために修正しました
+	}
 }
