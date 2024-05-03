@@ -4,8 +4,8 @@
 	"description": "人狼",
 	"start_url": "./index.html",
 	"display": "standalone",
-	"theme_color": "#182246",
-	"background_color": "#182246",
+	"theme_color": "#00000000",
+	"background_color": "#00000000",
 	"orientation": "any",
 	"icons": [
 		{
