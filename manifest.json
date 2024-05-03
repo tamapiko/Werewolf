@@ -3,7 +3,7 @@
 	"short_name": "人狼",
 	"description": "人狼",
 	"start_url": "./index.html",
-	"display": "standalone",
+	"display": "fullscreen",
 	"theme_color": "#182246",
 	"background_color": "#182246",
 	"orientation": "any",
