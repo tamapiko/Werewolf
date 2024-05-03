@@ -4,8 +4,8 @@
 	"description": "人狼",
 	"start_url": "./index.html",
 	"display": "standalone",
-	"theme_color": "#00000000",
-	"background_color": "#FFFFFF", // こちらを画面いっぱいにするために白色に変更しました
+	"theme_color": "#12151a",
+	"background_color": "#FFFFFF",
 	"orientation": "any",
 	"icons": [
 		{
@@ -30,6 +30,6 @@
 		}
 	],
 	"status_bar": {
-		"status_bar_color": "#00000000" // 時間やバッテリー残量の表示を透明にするために修正しました
+		"status_bar_color": "#00000000"
 	}
 }
