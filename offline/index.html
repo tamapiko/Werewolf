@@ -272,7 +272,20 @@
       handleError(e);
     }
   </script>
-  
+  <script>
+    try {
+      // オーディオ要素の作成
+var audio = new Audio('Werewolf.mp3');
+
+// リピート再生
+audio.loop = true;
+
+// 再生
+audio.play();
+    } catch (e) {
+      handleError(e);
+    }
+  </script>
   
     <script>
       const getProjectData = (function() {
